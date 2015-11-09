@@ -323,6 +323,20 @@ Elm.Bingo.make = function (_elm) {
                                     ,remainingEntries]],
                  model);
               }();
+            case "Mark":
+            return function () {
+                 var updateEntry = function (e) {
+                    return _U.eq(e.id,
+                    action._0) ? _U.replace([["wasSpoken"
+                                             ,$Basics.not(e.wasSpoken)]],
+                    e) : e;
+                 };
+                 return _U.replace([["entries"
+                                    ,A2($List.map,
+                                    updateEntry,
+                                    model.entries)]],
+                 model);
+              }();
             case "NoOp": return model;
             case "Sort":
             return _U.replace([["entries"
@@ -333,9 +347,12 @@ Elm.Bingo.make = function (_elm) {
                                model.entries)]],
               model);}
          _U.badCase($moduleName,
-         "between lines 39 and 51");
+         "between lines 40 and 59");
       }();
    });
+   var Mark = function (a) {
+      return {ctor: "Mark",_0: a};
+   };
    var Delete = function (a) {
       return {ctor: "Delete"
              ,_0: a};
@@ -343,7 +360,12 @@ Elm.Bingo.make = function (_elm) {
    var entryItem = F2(function (address,
    entry) {
       return A2($Html.li,
-      _L.fromArray([]),
+      _L.fromArray([$Html$Attributes.classList(_L.fromArray([{ctor: "_Tuple2"
+                                                             ,_0: "highlight"
+                                                             ,_1: entry.wasSpoken}]))
+                   ,A2($Html$Events.onClick,
+                   address,
+                   Mark(entry.id))]),
       _L.fromArray([A2($Html.span,
                    _L.fromArray([$Html$Attributes.$class("phrase")]),
                    _L.fromArray([$Html.text(entry.phrase)]))
@@ -422,6 +444,7 @@ Elm.Bingo.make = function (_elm) {
                        ,NoOp: NoOp
                        ,Sort: Sort
                        ,Delete: Delete
+                       ,Mark: Mark
                        ,update: update
                        ,title: title
                        ,pageHeader: pageHeader
