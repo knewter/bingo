@@ -94,11 +94,10 @@ entryItem address entry =
 
 
 totalPoints entries =
-  let
-    spokenEntries = List.filter .wasSpoken entries
-  in
-    List.map .points spokenEntries
-      |> List.sum
+  entries
+    |> List.filter .wasSpoken
+    |> List.map .points
+    |> List.sum
 
 
 totalItem total =
