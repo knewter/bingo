@@ -359,11 +359,14 @@ Elm.Bingo.make = function (_elm) {
    });
    var entryList = F2(function (address,
    entries) {
-      return A2($Html.ul,
-      _L.fromArray([]),
-      A2($List.map,
-      entryItem(address),
-      entries));
+      return function () {
+         var entryItems = A2($List.map,
+         entryItem(address),
+         entries);
+         return A2($Html.ul,
+         _L.fromArray([]),
+         entryItems);
+      }();
    });
    var Sort = {ctor: "Sort"};
    var view = F2(function (address,
