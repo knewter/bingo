@@ -284,30 +284,30 @@ Elm.Bingo.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
+   $StartApp = Elm.StartApp.make(_elm),
    $String = Elm.String.make(_elm);
-   var entryItem = F2(function (phrase,
-   points) {
+   var entryItem = function (entry) {
       return A2($Html.li,
       _L.fromArray([]),
       _L.fromArray([A2($Html.span,
                    _L.fromArray([$Html$Attributes.$class("phrase")]),
-                   _L.fromArray([$Html.text(phrase)]))
+                   _L.fromArray([$Html.text(entry.phrase)]))
                    ,A2($Html.span,
                    _L.fromArray([$Html$Attributes.$class("points")]),
-                   _L.fromArray([$Html.text($Basics.toString(points))]))]));
-   });
-   var entryList = A2($Html.ul,
-   _L.fromArray([]),
-   _L.fromArray([A2(entryItem,
-                "Future-Proof",
-                100)
-                ,A2(entryItem,
-                "Doing Agile",
-                200)]));
+                   _L.fromArray([$Html.text($Basics.toString(entry.points))]))]));
+   };
+   var entryList = function (entries) {
+      return A2($Html.ul,
+      _L.fromArray([]),
+      A2($List.map,
+      entryItem,
+      entries));
+   };
    var pageFooter = A2($Html.footer,
    _L.fromArray([]),
    _L.fromArray([A2($Html.a,
@@ -324,13 +324,75 @@ Elm.Bingo.make = function (_elm) {
    _L.fromArray([A2(title,
    "bingo!",
    3)]));
-   var view = A2($Html.div,
-   _L.fromArray([$Html$Attributes.id("container")]),
-   _L.fromArray([pageHeader
-                ,entryList
-                ,pageFooter]));
-   var main = view;
+   var update = F2(function (action,
+   model) {
+      return function () {
+         switch (action.ctor)
+         {case "NoOp": return model;
+            case "Sort":
+            return _U.replace([["entries"
+                               ,A2($List.sortBy,
+                               function (_) {
+                                  return _.points;
+                               },
+                               model.entries)]],
+              model);}
+         _U.badCase($moduleName,
+         "between lines 38 and 43");
+      }();
+   });
+   var Sort = {ctor: "Sort"};
+   var view = F2(function (address,
+   model) {
+      return A2($Html.div,
+      _L.fromArray([$Html$Attributes.id("container")]),
+      _L.fromArray([pageHeader
+                   ,entryList(model.entries)
+                   ,A2($Html.button,
+                   _L.fromArray([$Html$Attributes.$class("sort")
+                                ,A2($Html$Events.onClick,
+                                address,
+                                Sort)]),
+                   _L.fromArray([$Html.text("Sort")]))
+                   ,pageFooter]));
+   });
+   var NoOp = {ctor: "NoOp"};
+   var newEntry = F3(function (phrase,
+   points,
+   id) {
+      return {_: {}
+             ,id: id
+             ,phrase: phrase
+             ,points: points
+             ,wasSpoken: false};
+   });
+   var initialModel = {_: {}
+                      ,entries: _L.fromArray([A3(newEntry,
+                                             "Doing Agile",
+                                             200,
+                                             2)
+                                             ,A3(newEntry,
+                                             "In the Cloud",
+                                             300,
+                                             3)
+                                             ,A3(newEntry,
+                                             "Future-Proof",
+                                             100,
+                                             1)
+                                             ,A3(newEntry,
+                                             "Rock-Star Ninja",
+                                             400,
+                                             4)])};
+   var main = $StartApp.start({_: {}
+                              ,model: initialModel
+                              ,update: update
+                              ,view: view});
    _elm.Bingo.values = {_op: _op
+                       ,initialModel: initialModel
+                       ,newEntry: newEntry
+                       ,NoOp: NoOp
+                       ,Sort: Sort
+                       ,update: update
                        ,title: title
                        ,pageHeader: pageHeader
                        ,pageFooter: pageFooter
@@ -12766,6 +12828,59 @@ Elm.Signal.make = function (_elm) {
                         ,forwardTo: forwardTo
                         ,Mailbox: Mailbox};
    return _elm.Signal.values;
+};
+Elm.StartApp = Elm.StartApp || {};
+Elm.StartApp.make = function (_elm) {
+   "use strict";
+   _elm.StartApp = _elm.StartApp || {};
+   if (_elm.StartApp.values)
+   return _elm.StartApp.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "StartApp",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var start = function (app) {
+      return function () {
+         var actions = $Signal.mailbox($Maybe.Nothing);
+         var address = A2($Signal.forwardTo,
+         actions.address,
+         $Maybe.Just);
+         var model = A3($Signal.foldp,
+         F2(function (_v0,model) {
+            return function () {
+               switch (_v0.ctor)
+               {case "Just":
+                  return A2(app.update,
+                    _v0._0,
+                    model);}
+               _U.badCase($moduleName,
+               "on line 92, column 34 to 57");
+            }();
+         }),
+         app.model,
+         actions.signal);
+         return A2($Signal.map,
+         app.view(address),
+         model);
+      }();
+   };
+   var App = F3(function (a,b,c) {
+      return {_: {}
+             ,model: a
+             ,update: c
+             ,view: b};
+   });
+   _elm.StartApp.values = {_op: _op
+                          ,App: App
+                          ,start: start};
+   return _elm.StartApp.values;
 };
 Elm.String = Elm.String || {};
 Elm.String.make = function (_elm) {

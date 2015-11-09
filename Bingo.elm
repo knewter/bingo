@@ -3,7 +3,47 @@ module Bingo where
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+
 import String exposing (toUpper, repeat, trimRight)
+
+import StartApp
+
+-- MODEL
+
+initialModel =
+  { entries =
+      [ newEntry "Doing Agile" 200 2,
+        newEntry "In the Cloud" 300 3,
+        newEntry "Future-Proof" 100 1,
+        newEntry "Rock-Star Ninja" 400 4
+      ]
+  }
+
+
+newEntry phrase points id =
+  { phrase = phrase
+  , points = points
+  , wasSpoken = False
+  , id = id
+  }
+
+-- UPDATE
+
+type Action
+  = NoOp
+  | Sort
+
+
+update action model =
+  case action of
+    NoOp ->
+      model
+
+    Sort ->
+      { model | entries <- List.sortBy .points model.entries }
+
+
+-- VIEW
 
 title message times =
   message ++ " "
@@ -24,28 +64,35 @@ pageFooter =
     ]
 
 
-entryItem phrase points =
+entryItem entry =
   li []
-    [ span [ class "phrase" ] [ text phrase ],
-      span [ class "points" ] [ text (toString points) ]
+    [ span [ class "phrase" ] [ text entry.phrase ],
+      span [ class "points" ] [ text (toString entry.points) ]
     ]
 
 
-entryList =
-  ul [ ]
-    [
-      entryItem "Future-Proof" 100,
-      entryItem "Doing Agile" 200
-    ]
+entryList entries =
+  ul [ ] (List.map entryItem entries)
 
 
-view =
+view address model =
   div [ id "container" ]
     [ pageHeader,
-      entryList,
+      entryList model.entries,
+      button
+        [ class "sort", onClick address Sort ]
+        [ text "Sort" ],
       pageFooter
     ]
 
+-- WIRE IT ALL TOGETHER!
 
 main =
-  view
+  -- initialModel
+  --   |> update Sort
+  --   |> view
+  StartApp.start
+    { model = initialModel,
+      view = view,
+      update = update
+    }
