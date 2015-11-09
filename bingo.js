@@ -289,11 +289,25 @@ Elm.Bingo.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
+   var entryItem = F2(function (phrase,
+   points) {
+      return A2($Html.li,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.span,
+                   _L.fromArray([$Html$Attributes.$class("phrase")]),
+                   _L.fromArray([$Html.text(phrase)]))
+                   ,A2($Html.span,
+                   _L.fromArray([$Html$Attributes.$class("points")]),
+                   _L.fromArray([$Html.text($Basics.toString(points))]))]));
+   });
    var entryList = A2($Html.ul,
    _L.fromArray([]),
-   _L.fromArray([A2($Html.li,
-   _L.fromArray([]),
-   _L.fromArray([$Html.text("Future-Proof")]))]));
+   _L.fromArray([A2(entryItem,
+                "Future-Proof",
+                100)
+                ,A2(entryItem,
+                "Doing Agile",
+                200)]));
    var pageFooter = A2($Html.footer,
    _L.fromArray([]),
    _L.fromArray([A2($Html.a,
@@ -320,6 +334,7 @@ Elm.Bingo.make = function (_elm) {
                        ,title: title
                        ,pageHeader: pageHeader
                        ,pageFooter: pageFooter
+                       ,entryItem: entryItem
                        ,entryList: entryList
                        ,view: view
                        ,main: main};
