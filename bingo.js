@@ -364,7 +364,7 @@ Elm.Bingo.make = function (_elm) {
                                model.entries)]],
               model);}
          _U.badCase($moduleName,
-         "between lines 40 and 59");
+         "between lines 56 and 75");
       }();
    });
    var Mark = function (a) {
@@ -458,7 +458,22 @@ Elm.Bingo.make = function (_elm) {
                               ,model: initialModel
                               ,update: update
                               ,view: view});
+   var Model = function (a) {
+      return {_: {},entries: a};
+   };
+   var Entry = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,id: d
+             ,phrase: a
+             ,points: b
+             ,wasSpoken: c};
+   });
    _elm.Bingo.values = {_op: _op
+                       ,Entry: Entry
+                       ,Model: Model
                        ,initialModel: initialModel
                        ,newEntry: newEntry
                        ,NoOp: NoOp
